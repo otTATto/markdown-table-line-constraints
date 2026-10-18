@@ -40,7 +40,19 @@ Details about each version are in [`docs/en/`](docs/en/). The specification for 
 
 There has been a request for a syntax that adjusts table column widths, for example by the number of hyphens (`-`) in the delimiter row[^1]. In that discussion, commenters pointed out that widths depend on the viewport and the size of the table, which the parser and renderer cannot know, and that the feature should be implemented as an extension. The issue has since been closed.
 
+## How Existing Renderers Differ, and the Problem
+
+Renderers decide column widths differently, even for the same table. VS Code's Markdown preview is a web page underneath, so the browser's standard table layout decides the column widths[^2]. Zed's Markdown preview, on the other hand, runs on Zed's own UI framework and draws tables as a CSS Grid[^3].
+
+![A side-by-side comparison of Markdown table previews in VS Code and Zed. On the left, VS Code wraps the dates "October 9" and "October 10" in the Date column onto two lines, with the caption "Both elements in the Date column of the table are displayed across two lines." On the right, Zed shows the same dates on a single line, with the caption "Both elements in the Date column of the table are displayed in a single line."](docs/en/src/comparison-vscode-with-zed.en.png)
+
+Each approach has strengths and weaknesses. The approach of VS Code (the browser's standard) gives each column width in proportion to its content, so columns with a lot of text are easy to read, but short columns get squeezed and tend to wrap. This is especially noticeable in languages such as Japanese, where a line can break between almost any two characters. Zed's approach keeps short columns on one line first, but long columns only get the leftover width, and when the display is extremely narrow, the text may get squashed.
+
+The important point is that neither approach can know **the writer's intent**: which columns should stay on one line.
+
 ## Philosophy
+
+So how should the writer convey that intent?
 
 Markdown is a markup language, so it is a fair point that a document's content should be written semantically and that Markdown should not interfere with how the content is rendered or looks more than necessary. However, the GFM delimiter row, for example, already carries alignment information such as `:--:`, which is information about appearance. Besides, nobody wants to read a hard-to-read table. I believe this proposal can have a large impact on readability with an extremely simple addition to the syntax.
 
@@ -48,19 +60,15 @@ This proposal started from a personal experience: I came across a table like the
 
 In this way, I want to offer a small idea that is easy on writers, on parsers and renderers, and on readers.
 
-## Known Limitations and Issues
+## Known Limitations and Issues of This Proposal
 
 ### Forward compatibility cannot be guaranteed
 
 Backward compatibility can be guaranteed: tables that do not use `<` look the same as before. However, GFM parsers that do not support this proposal do not interpret tables with `<` as tables at all.
 
-### Some parsers and renderers may not need this syntax
+### The effect is hard to see when the display is wide enough
 
-As of October 12, 2026, VS Code, GitHub, Qiita, and other tools may not display such tables as expected. However, some viewers display a table like the one in [# A Simple Example](#a-simple-example) as expected even without `<`. For example, the Markdown Preview built into the Zed text editor tries to keep a column on a single line whenever it fits.
-
-![A side-by-side comparison of Markdown table previews in VS Code and Zed. On the left, VS Code wraps the dates "October 9" and "October 10" in the Date column onto two lines, with the caption "Both elements in the Date column of the table are displayed across two lines." On the right, Zed shows the same dates on a single line, with the caption "Both elements in the Date column of the table are displayed in a single line."](docs/en/src/comparison-vscode-with-zed.en.png)
-
-Still, this proposal is meaningful as a way to reflect the writer's intent instead of leaving the readability of tables to the renderer. Also, when the display is even narrower, Zed also has to wrap some column, and this syntax lets the writer say which columns should take priority.
+With renderers that keep short columns on one line first, such as Zed, a table displays as expected without `<` as long as the display is wide enough. This proposal makes a difference when the display is too narrow and some column has to wrap.
 
 ## License
 
@@ -71,3 +79,5 @@ MIT. See [LICENSE](./LICENSE) for details.
 - [**GitHub Flavored Markdown は何であって何でないか** (What GitHub Flavored Markdown is and is not, in Japanese) - Qiita](https://qiita.com/tk0miya/items/6b81e0e4563199037018)
 
 [^1]: https://github.com/markedjs/marked/issues/266
+[^2]: https://github.com/microsoft/vscode/blob/72e9539ed6b7115bae67de36810bf10c3cb0ba47/extensions/markdown-language-features/media/markdown.css#L377-L394
+[^3]: https://github.com/zed-industries/zed/blob/56934ec0560bce8929025497411de7f5322fb6ca/crates/markdown/src/markdown.rs#L3033-L3048
