@@ -32,6 +32,8 @@ In the table below, `✅` means done, `🚧` means in progress, and `N/A` means 
 
 In the future, I would like to support any number of lines, such as `<2` or `<5`, not just `<`.
 
+See repo: Roadmap ([#2](https://github.com/otTATto/markdown-table-line-constraints/issues/2)) for the plan and detailed progress.
+
 ## Repository Structure
 
 Details about each version are in [`docs/en/`](docs/en/). The specification for each version is in [`spec/`](spec/). The details of the parser and renderer implementations are not decided yet.

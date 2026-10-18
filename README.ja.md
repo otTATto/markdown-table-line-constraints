@@ -32,6 +32,8 @@ Markdown Table Line Constraints は、Markdown の表に、列ごとのセルあ
 
 将来的には `<` だけでなく、`<2` や `<5` などによって任意の行数を指定できるようにしたいです。
 
+今後の計画と具体的な進捗は repo: Roadmap ([#2](https://github.com/otTATto/markdown-table-line-constraints/issues/2)) にまとめています。
+
 ## リポジトリの構成
 
 各バージョンごとの詳細は、[`docs/ja/`](docs/ja/) 内に書いています。各バージョンの具体的な仕様は、[`spec/`](spec/) 内にあります。パーサーの実装やレンダラーの実装について、現在詳細は未定です。
